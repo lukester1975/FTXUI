@@ -27,10 +27,7 @@ static std::string charset[6][6] = {
 };
 
 int Wrap(int input, int modulo) {
-  input %= modulo;
-  input += modulo;
-  input %= modulo;
-  return input;
+  return (input < 0) ? (input + modulo) : input;
 }
 
 void Order(int& a, int& b) {
@@ -181,10 +178,25 @@ TableSelection Table::SelectRectangle(int column_min,
 
   TableSelection output;  // NOLINT
   output.table_ = this;
-  output.x_min_ = 2 * column_min;
-  output.x_max_ = 2 * column_max + 2;
-  output.y_min_ = 2 * row_min;
-  output.y_max_ = 2 * row_max + 2;
+
+  if ((column_min >= 0) && (column_min < input_dim_x_)) {
+    column_max %= input_dim_x_;
+    output.x_min_ = 2 * column_min;
+    output.x_max_ = 2 * column_max + 2;
+  } else {
+    output.x_min_ = 0;
+    output.x_max_ = -1;
+  }
+
+  if ((row_min >= 0) && (row_min < input_dim_y_)) {
+    row_max %= input_dim_y_;
+    output.y_min_ = 2 * row_min;
+    output.y_max_ = 2 * row_max + 2;
+  } else {
+    output.y_min_ = 0;
+    output.y_max_ = -1;
+  }
+
   return output;
 }
 
